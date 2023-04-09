@@ -1,4 +1,6 @@
 import logging
+import urllib
+import pymongo as pymongo
 from typing import List, Set
 import requests
 
@@ -10,8 +12,9 @@ CATEGORIES_IN_LINE = 3
 QUESTIONS_NUMBER = 9
 OPENTDB_URL = 'https://opentdb.com/api.php'
 
+
 def get_trivia_questions():
-    response = requests.get(OPENTDB_URL, params={'amount': QUESTIONS_NUMBER, 'type': 'multiple'})
+    response = requests.get(OPENTDB_URL, params={'amount': QUESTIONS_NUMBER, 'type': 'multiple', 'category': 11})
     if response.ok:
         results = [TriviaQuestion(result) for result in response.json()['results']]
     else:
@@ -53,13 +56,18 @@ def is_valid_user_input(user_input: str, valid_range):
     else:
         return False
 
+def get_valid_user_input(valid_answers_range: List[int], instruction_msg: str):
+    print(instruction_msg)
+    _answer = input()
+
+    while not is_valid_user_input(_answer, valid_answers_range):
+        print("Input is not valid")
+        print(instruction_msg)
+        _answer = input()
+    return _answer
 
 def ask_trivia_question(chosen_question: TriviaQuestion):
-    print(chosen_question)
-    _answer = input()
-    while not is_valid_user_input(_answer, [1, 4]):
-        print("Input is not valid. Please try again")
-        _answer = input()
+    _answer = get_valid_user_input([1,4], chosen_question)
 
     _answer = int(_answer)
     if _answer == chosen_question.get_answer_index():
@@ -71,14 +79,7 @@ def ask_trivia_question(chosen_question: TriviaQuestion):
 
 
 def handle_question_choosing(trivia_questions: List[TriviaQuestion], answered_questions: Set[int], category_table):
-    print('please choose question')
-    _answer = input()
-
-    while not is_valid_user_input(_answer, [1, len(trivia_questions) - 1]):
-        print("Input is not valid")
-        print('please choose question')
-        _answer = input()
-
+    _answer = get_valid_user_input([1, len(trivia_questions) - 1], 'please choose question')
     question_number: int = int(_answer) - 1
     mark_answered_question(category_table, question_number)
 
@@ -87,9 +88,6 @@ def handle_question_choosing(trivia_questions: List[TriviaQuestion], answered_qu
     else:
         answered_questions.add(question_number)
         ask_trivia_question(trivia_questions[question_number])
-
-    print("press any key to continue")
-    input()
 
 
 def run_trivia():
@@ -109,3 +107,4 @@ def run_trivia():
 
 if __name__ == '__main__':
     run_trivia()
+
