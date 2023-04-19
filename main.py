@@ -1,6 +1,4 @@
 import logging
-import urllib
-import pymongo as pymongo
 from typing import List, Set
 import requests
 
@@ -56,6 +54,7 @@ def is_valid_user_input(user_input: str, valid_range):
     else:
         return False
 
+
 def get_valid_user_input(valid_answers_range: List[int], instruction_msg: str):
     print(instruction_msg)
     _answer = input()
@@ -66,8 +65,9 @@ def get_valid_user_input(valid_answers_range: List[int], instruction_msg: str):
         _answer = input()
     return _answer
 
+
 def ask_trivia_question(chosen_question: TriviaQuestion):
-    _answer = get_valid_user_input([1,4], chosen_question)
+    _answer = get_valid_user_input([1, 4], str(chosen_question))
 
     _answer = int(_answer)
     if _answer == chosen_question.get_answer_index():
@@ -107,4 +107,3 @@ def run_trivia():
 
 if __name__ == '__main__':
     run_trivia()
-
