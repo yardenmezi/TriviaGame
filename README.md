@@ -20,7 +20,14 @@ The game will retrieve questions from the Open Trivia Database API and display t
 
 Please note that the categories are randomly selected, so it's possible to have the same category appear more than once during a game session.
 ##Installation
-TBD
+To use this project and play the trivia game, make sure you have Python version 3.7 or above installed on your machine. 
+you can check your Python version by running: ```python --version ```
+
+To get started, clone this project to your local machine, then navigate to the project directory and run the following command to install the required modules:
+```pip install -r requirements.txt```
+
+That's it! You should now have everything you need to run this project on your machine.
+
 ## Usage
 
 To start the game, run the following command in your terminal:
