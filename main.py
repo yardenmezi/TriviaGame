@@ -1,7 +1,10 @@
 import logging
+import urllib
 from typing import List, Set
-import requests
 
+import pymongo
+import requests
+import yaml
 from cli_formatting import Color
 import cli_formatting as formatting
 from triviaComponents import TriviaQuestion
@@ -25,7 +28,6 @@ def get_trivia_questions():
         f'Failed to get data from {TRIVIA_URL}. Status code: {response.status_code}. Reason: {response.reason}')
 
 
-
 def build_categories_table(trivia_questions):
     categories = [question.get_category() for question in trivia_questions]
     categories_table = []
@@ -39,7 +41,6 @@ def build_categories_table(trivia_questions):
 
 
 def print_categories(categories_lst: list):
-
     table_rows = len(categories_lst) // CATEGORIES_IN_LINE
     for row in range(table_rows):
         for box_line_number in range(len(formatting.QUESTION_BOX)):
@@ -51,7 +52,8 @@ def print_categories(categories_lst: list):
 
 
 def mark_answered_question(category_table: list, answered_question: int):
-    category_table[answered_question] = cli_formatting.color_string(Color.UNAVAILABLE.value, category_table[answered_question])
+    category_table[answered_question] = formatting.color_string(Color.UNAVAILABLE.value,
+                                                                category_table[answered_question])
 
 
 def is_valid_user_input(user_input: str, valid_range):
@@ -59,7 +61,6 @@ def is_valid_user_input(user_input: str, valid_range):
         return True
     else:
         return False
-
 
 
 def get_valid_user_input(valid_answers_range: List[int], instruction_msg: str):
@@ -73,9 +74,8 @@ def get_valid_user_input(valid_answers_range: List[int], instruction_msg: str):
     return _answer
 
 
-
 def ask_trivia_question(chosen_question: TriviaQuestion):
-    _answer = get_valid_user_input([1,4], chosen_question)
+    _answer = get_valid_user_input([1, 4], chosen_question)
 
     _answer = int(_answer)
     if _answer == chosen_question.get_answer_index():
@@ -119,6 +119,7 @@ def run_trivia() -> int:
         print("Sorry, trivia is not currently available")
         return -1
 
+
 def connect_db():
     escaped_user = urllib.parse.quote_plus(z["DATABASE"]["USERNAME"])
     escaped_password = urllib.parse.quote_plus(z["DATABASE"]["PASSWORD"])
@@ -130,8 +131,20 @@ def connect_db():
         print("Pinged your   deployment. You successfully connected to MongoDB!")
         return client
     except Exception as e:
-        #TODO: LOG
+        logging.error('An error occurred: %s', e)
         return None
+
+
+def print_level(client, score):
+    db = client.sample_mflix
+    collection_names = db.list_collection_names()
+    collection = client.sample_mflix.movies
+
+    rating_level_movie = collection.find_one({"imdb.rating": {"$gt": score - 0.5, "$lt": score + 0.5}})
+
+    print(rating_level_movie['title'])
+    print(rating_level_movie['plot'])
+
 
 if __name__ == '__main__':
     client = connect_db()
@@ -139,18 +152,13 @@ if __name__ == '__main__':
     score = 6
     with open("config_file.yaml", "r") as f:
         z = yaml.safe_load(f)
-    print(f"your score is {score}")
 
     if client:
         try:
-            db = client.sample_mflix
-            collection_names = db.list_collection_names()
-            collection = client.sample_mflix.movies
-
-            rating_level_movie = collection.find_one({"imdb.rating": {"$gt": score - 0.5, "$lt": score + 0.5}})
-
-            print(rating_level_movie['title'])
-            print(rating_level_movie['plot'])
+            print_level(client, score)
         except Exception as e:
-            print(e)
+            logging.error('An error occurred: %s', e)
+            print(f"your score is {score}")
+    else:
+        print(f"your score is {score}")
 
