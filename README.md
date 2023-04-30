@@ -20,7 +20,7 @@ The game will retrieve questions from the Open Trivia Database API and display t
 
 Please note that the categories are randomly selected, so it's possible to have the same category appear more than once during a game session.
 
-##Installation
+## installation
 To use this project and play the trivia game, make sure you have Python version 3.7 or above installed on your machine. 
 you can check your Python version by running: ```python --version ```
 
