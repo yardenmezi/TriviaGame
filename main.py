@@ -37,7 +37,6 @@ def build_categories_table(trivia_questions):
 
 
 def print_categories(categories_lst: list):
-
     table_rows = len(categories_lst) // CATEGORIES_IN_LINE
     for row in range(table_rows):
         for box_line_number in range(len(formatting.QUESTION_BOX)):
@@ -49,7 +48,8 @@ def print_categories(categories_lst: list):
 
 
 def mark_answered_question(category_table: list, answered_question: int):
-    category_table[answered_question] = formatting.color_string(Color.UNAVAILABLE.value, category_table[answered_question])
+    category_table[answered_question] = formatting.color_string(Color.UNAVAILABLE.value,
+                                                                category_table[answered_question])
 
 
 def is_valid_user_input(user_input: str, valid_range):
@@ -83,7 +83,7 @@ def ask_trivia_question(chosen_question: TriviaQuestion):
 
 
 def handle_question_choosing(trivia_questions: List[TriviaQuestion], answered_questions: Set[int], category_table):
-    _answer = get_valid_user_input([1, len(trivia_questions) - 1], 'Please choose question')
+    _answer = get_valid_user_input([1, len(trivia_questions) - 1], 'please choose question')
     question_number: int = int(_answer) - 1
     mark_answered_question(category_table, question_number)
 
@@ -91,24 +91,33 @@ def handle_question_choosing(trivia_questions: List[TriviaQuestion], answered_qu
         print('You already chose this question')
     else:
         answered_questions.add(question_number)
-        ask_trivia_question(trivia_questions[question_number])
+        if ask_trivia_question(trivia_questions[question_number]):
+            return 1
+    return 0
 
 
-def run_trivia():
+def run_trivia() -> int:
     try:
+        game_score = 0
         trivia_questions = get_trivia_questions()
         answered_questions = set()
         category_table = build_categories_table(trivia_questions)
 
         while len(answered_questions) < len(trivia_questions):
+            print(f"your score is {game_score}")
             print_categories(category_table)
             handle_question_choosing(trivia_questions, answered_questions, category_table)
 
         print("Game over")
+        return game_score
     except RuntimeError as e:
         logging.error('An error occurred: %s', e)
         print("Sorry, trivia is not currently available")
+        return -1
 
 
 if __name__ == '__main__':
-    run_trivia()
+    score = run_trivia()
+    print(f"your score is {score}")
+
+
