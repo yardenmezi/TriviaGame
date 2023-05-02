@@ -14,8 +14,7 @@ QUESTIONS_NUMBER = 9
 TRIVIA_URL = 'https://opentdb.com/api.php'
 trivia_params = {
     'amount': QUESTIONS_NUMBER,
-    'type': 'multiple',
-    'category': 11
+    'type': 'multiple'
 }
 
 
