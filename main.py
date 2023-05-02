@@ -4,6 +4,7 @@ import requests
 from cli_formatting import Color
 import cli_formatting as formatting
 from triviaComponents import TriviaQuestion
+import tkinter as tk
 
 CATEGORIES_IN_LINE = 3
 QUESTIONS_NUMBER = 9
