@@ -1,10 +1,6 @@
 import logging
-import urllib
 from typing import List, Set
-
-import pymongo
 import requests
-import yaml
 from cli_formatting import Color
 import cli_formatting as formatting
 from triviaComponents import TriviaQuestion
@@ -74,7 +70,7 @@ def get_valid_user_input(valid_answers_range: List[int], instruction_msg: str):
 
 
 def ask_trivia_question(chosen_question: TriviaQuestion):
-    _answer = get_valid_user_input([1, 4], chosen_question)
+    _answer = get_valid_user_input([1, 4], str(chosen_question))
 
     _answer = int(_answer)
     if _answer == chosen_question.get_answer_index():
@@ -119,45 +115,8 @@ def run_trivia() -> int:
         return -1
 
 
-def connect_db():
-    escaped_user = urllib.parse.quote_plus(z["DATABASE"]["USERNAME"])
-    escaped_password = urllib.parse.quote_plus(z["DATABASE"]["PASSWORD"])
-    connection_string = z["DATABASE"]["CLASTER_CONNECTION_STRING"]
-    uri = f"mongodb+srv://{escaped_user}:{escaped_password}@{connection_string}/?retryWrites=true&w=majority"
-    try:
-        client = pymongo.MongoClient(uri)
-        client.admin.command('ping')
-        print("Pinged your   deployment. You successfully connected to MongoDB!")
-        return client
-    except Exception as e:
-        logging.error('An error occurred: %s', e)
-        return None
-
-
-def print_level(client, score):
-    db = client.sample_mflix
-    collection_names = db.list_collection_names()
-    collection = client.sample_mflix.movies
-
-    rating_level_movie = collection.find_one({"imdb.rating": {"$gt": score - 0.5, "$lt": score + 0.5}})
-
-    print(rating_level_movie['title'])
-    print(rating_level_movie['plot'])
-
-
 if __name__ == '__main__':
-    client = connect_db()
-    # score = run_trivia()
-    score = 6
-    with open("config_file.yaml", "r") as f:
-        z = yaml.safe_load(f)
+    score = run_trivia()
+    print(f"your score is {score}")
 
-    if client:
-        try:
-            print_level(client, score)
-        except Exception as e:
-            logging.error('An error occurred: %s', e)
-            print(f"your score is {score}")
-    else:
-        print(f"your score is {score}")
 
