@@ -59,7 +59,6 @@ class GameHandler:
         else:
             print(f"Wrong answer. Answer was: {chosen_question.get_answer()}")
 
-
     def handle_question_choosing(self) -> int:
         _answer = self.get_valid_user_input([1, len(self.trivia_questions)], 'please choose question')
         question_number: int = int(_answer) - 1
@@ -70,9 +69,6 @@ class GameHandler:
         else:
             self.answered_questions.add(question_number)
             self.ask_trivia_question(self.trivia_questions[question_number])
-            # if self.ask_trivia_question(self.trivia_questions[question_number]):
-                # return 1
-        # return 0
 
     def is_game_over(self) -> bool:
         return len(self.answered_questions) == len(self.trivia_questions)
