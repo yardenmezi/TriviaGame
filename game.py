@@ -6,25 +6,27 @@ from trivia_components import TriviaQuestion
 
 
 class GameHandler:
-    def __init__(self):
+    def __init__(self, formatting_config, questions_api_config):
         self._score = 0
+        print(formatting_config)
         try:
-            self.trivia_questions = self.get_trivia_questions()
+            self.trivia_questions = self.get_trivia_questions(questions_api_config)
         except RuntimeError as e:
             logging.error(f'An error occurred: {e}')
             print("Sorry, trivia is not currently available")
             return None
         self.answered_questions = set()
-        self.category_table = formatting.QuestionsTable(self.trivia_questions, CATEGORIES_IN_LINE)
+        self.category_table = formatting.QuestionsTable(self.trivia_questions, formatting_config["CATEGORIES_IN_LINE"])
 
-    # todo: where to put it?
-    def get_trivia_questions(self):
-        response = requests.get(TRIVIA_URL, params=trivia_params)
+    @staticmethod
+    def get_trivia_questions(questions_api_config):
+        print(questions_api_config)
+        response = requests.get(questions_api_config["URL"], params=questions_api_config["PARAMS"])
         if response.ok:
             return [TriviaQuestion(result) for result in response.json()['results']]
 
         raise RuntimeError(
-            f'Failed to get data from {TRIVIA_URL}. Status code: {response.status_code}. Reason: {response.reason}')
+            f'Failed to get data from {questions_api_config["URL"]}. Status code: {response.status_code}. Reason: {response.reason}')
 
     @staticmethod
     def is_valid_user_input(user_input: str, valid_range):
