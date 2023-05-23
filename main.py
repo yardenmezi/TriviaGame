@@ -1,12 +1,3 @@
-
-
-
-# def decorator_example(func):
-#     print("I got decorated")
-#     func()
-
-
-# @decorator_example
 from game import GameHandler
 
 if __name__ == '__main__':

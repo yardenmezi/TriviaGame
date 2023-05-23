@@ -4,15 +4,6 @@ import requests
 import cli_formatting as formatting
 from trivia_components import TriviaQuestion
 
-# TODO: CONFIG FILE
-CATEGORIES_IN_LINE = 3
-QUESTIONS_NUMBER = 9
-TRIVIA_URL = 'https://opentdb.com/api.php'
-trivia_params = {
-    'amount': QUESTIONS_NUMBER,
-    'type': 'multiple'
-}
-
 
 class GameHandler:
     def __init__(self):
