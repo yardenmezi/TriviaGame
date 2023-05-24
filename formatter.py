@@ -1,8 +1,6 @@
 from enum import Enum
 
 
-# todo: add here the messages
-
 class Color(Enum):
     YELLOW = '\033[1;34m'
     BLUE = '\033[1;33m'
@@ -10,13 +8,17 @@ class Color(Enum):
     RESET = '\033[0m'
 
 
-color_string = lambda color, question_box: [color + string + Color.RESET.value for string in question_box]
+apply_color = lambda color, question_box: [color + string + Color.RESET.value for string in question_box]
 QUESTION_BOX = ['╔' + '═' * 45, '║' + ' ' * 45, None, '╚' + '═' * 45]
 
 
-class QuestionsTable:
-    def __init__(self, trivia_questions: list, categories_in_line: int):
+class Formatter:
+    def __init__(self, categories_in_line: int):
         self.categories_in_line = categories_in_line
+        self.trivia_questions = []
+        self.categories_lst = []
+
+    def set_questions(self, trivia_questions):
         self.trivia_questions = trivia_questions
         self.categories_lst = self._build_categories_table()
 
@@ -38,10 +40,13 @@ class QuestionsTable:
         for question_idx, category_name in enumerate(categories):
             color = Color.YELLOW.value if question_idx % 2 else Color.BLUE.value
             question_cell = self._build_question_box(question_idx, category_name)
-            categories_table.append(color_string(color, question_cell))
+            categories_table.append(apply_color(color, question_cell))
         return categories_table
 
-    def print_categories(self):
+    def show_categories(self):
+        if len(self.categories_lst):
+            #todo: handle
+            print("No trivia questions to show")
         table_rows = len(self.categories_lst) // self.categories_in_line
         for row in range(table_rows):
             for box_line_number in range(len(QUESTION_BOX)):
@@ -52,5 +57,7 @@ class QuestionsTable:
             print('')
 
     def mark_answered_question(self, answered_question: int):
-        self.categories_lst[answered_question] = color_string(Color.UNAVAILABLE.value,
-                                                              self.categories_lst[answered_question])
+        if answered_question < len(self.categories_lst):
+            self.categories_lst[answered_question] = apply_color(Color.UNAVAILABLE.value,
+                                                                 self.categories_lst[answered_question])
+        # todo: raise exception else.

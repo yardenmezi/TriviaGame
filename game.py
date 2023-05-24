@@ -1,22 +1,24 @@
-import logging
 from typing import List
 import requests
-import cli_formatting as formatting
+import messages
 from trivia_components import TriviaQuestion
 
 
 class GameHandler:
-    def __init__(self, formatting_config, questions_api_config):
+    def __init__(self, formatter, questions_api_config):
         self._score = 0
-        print(formatting_config)
-        try:
-            self.trivia_questions = self.get_trivia_questions(questions_api_config)
-        except RuntimeError as e:
-            logging.error(f'An error occurred: {e}')
-            print("Sorry, trivia is not currently available")
-            return None
+        self.formatter = formatter
+        self._questions_api_config = questions_api_config
+        self.trivia_questions = None
         self.answered_questions = set()
-        self.category_table = formatting.QuestionsTable(self.trivia_questions, formatting_config["CATEGORIES_IN_LINE"])
+
+        self.init_new_game()
+
+    def init_new_game(self):
+        self._score = 0
+        self.answered_questions = set()
+        self.trivia_questions = self.get_trivia_questions(self._questions_api_config)
+        self.formatter.set_questions(self.trivia_questions)
 
     @staticmethod
     def get_trivia_questions(questions_api_config):
@@ -39,7 +41,7 @@ class GameHandler:
         print(instruction_msg)
         _answer = input()
         while not self.is_valid_user_input(_answer, valid_answers_range):
-            print("Input is not valid")
+            print(messages.USER_INPUT_INVALID)
             print(instruction_msg)
             _answer = input()
         return _answer
@@ -52,13 +54,13 @@ class GameHandler:
         else:
             print(f"Wrong answer. Answer was: {chosen_question.get_answer()}")
 
-    def handle_question_choosing(self) -> int:
+    def handle_question_choosing(self):
         _answer = self.get_valid_user_input([1, len(self.trivia_questions)], 'please choose question')
         question_number: int = int(_answer) - 1
-        self.category_table.mark_answered_question(question_number)
+        self.formatter.mark_answered_question(question_number)
 
         if question_number in self.answered_questions:
-            print('You already chose this question')
+            print(messages.QUESTION_CHOSEN)
         else:
             self.answered_questions.add(question_number)
             self.ask_trivia_question(self.trivia_questions[question_number])
@@ -67,8 +69,7 @@ class GameHandler:
         return len(self.answered_questions) == len(self.trivia_questions)
 
     def run_trivia(self) -> int:
+        self.formatter.set_questions(self.trivia_questions)
         while not self.is_game_over():
-            self.category_table.print_categories()
+            self.formatter.show_categories()
             self.handle_question_choosing()
-        print("Game over")
-        return self._score

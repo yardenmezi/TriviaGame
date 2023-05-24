@@ -1,12 +1,20 @@
 import yaml
+import messages
 from game import GameHandler
+import formatter
+
 
 if __name__ == '__main__':
-    with open("config.yaml", "r") as f:
-        config = yaml.safe_load(f)
+    try:
+        with open("config.yaml", "r") as f:
+            config = yaml.safe_load(f)
+        formatter = formatter.Formatter(config["FORMATTING"]["CATEGORIES_IN_LINE"])
+        game_handler = GameHandler(formatter, config["GAME"]["QUESTIONS_API"])
 
-    game_handler = GameHandler(config["FORMATTING"], config["GAME"]["QUESTIONS_API"])
-    score = game_handler.run_trivia()
-    print(f"your score is {score}")
+        score = game_handler.run_trivia()
+        print(f"your score is {score}")
+    except RuntimeError | OSError as e:
+        logging.error(f'An error occurred: {e}.')
+        print(messages.TRIVIA_UNAVAILABLE)
 
 
