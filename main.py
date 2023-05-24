@@ -1,3 +1,5 @@
+import logging
+
 import yaml
 import messages
 from game import GameHandler

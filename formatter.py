@@ -44,9 +44,9 @@ class Formatter:
         return categories_table
 
     def show_categories(self):
-        if len(self.categories_lst):
-            #todo: handle
-            print("No trivia questions to show")
+        if not self.categories_lst or len(self.categories_lst) == 0:
+            raise RuntimeError("No trivia questions to show")
+
         table_rows = len(self.categories_lst) // self.categories_in_line
         for row in range(table_rows):
             for box_line_number in range(len(QUESTION_BOX)):
