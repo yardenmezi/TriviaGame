@@ -8,11 +8,10 @@ class Color(Enum):
     RESET = '\033[0m'
 
 
-apply_color = lambda color, question_box: [color + string + Color.RESET.value for string in question_box]
-QUESTION_BOX = ['╔' + '═' * 45, '║' + ' ' * 45, None, '╚' + '═' * 45]
-
-
 class Formatter:
+    apply_color = lambda color, question_box: [color + string + Color.RESET.value for string in question_box]
+    QUESTION_BOX = ['╔' + '═' * 45, '║' + ' ' * 45, None, '╚' + '═' * 45]
+
     def __init__(self, categories_in_line: int):
         self.categories_in_line = categories_in_line
         self.trivia_questions = []
@@ -60,4 +59,5 @@ class Formatter:
         if answered_question < len(self.categories_lst):
             self.categories_lst[answered_question] = apply_color(Color.UNAVAILABLE.value,
                                                                  self.categories_lst[answered_question])
-        # todo: raise exception else.
+        else:
+            raise RuntimeError("marked question doesn't exist.")

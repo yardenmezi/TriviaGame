@@ -22,7 +22,6 @@ class GameHandler:
 
     @staticmethod
     def get_trivia_questions(questions_api_config):
-        print(questions_api_config)
         response = requests.get(questions_api_config["URL"], params=questions_api_config["PARAMS"])
         if response.ok:
             return [TriviaQuestion(result) for result in response.json()['results']]
