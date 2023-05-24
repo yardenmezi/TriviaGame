@@ -15,8 +15,7 @@ if __name__ == '__main__':
 
         score = game_handler.run_trivia()
         print(f"your score is {score}")
-    except RuntimeError | OSError as e:
+    except RuntimeError or OSError as e:
         logging.error(f'An error occurred: {e}.')
         print(messages.TRIVIA_UNAVAILABLE)
-
 

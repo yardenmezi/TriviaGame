@@ -22,10 +22,10 @@ class Formatter:
         self.categories_lst = self._build_categories_table()
 
     @staticmethod
-    def _build_question_box(question_number: int, category: str) -> str:
+    def _build_question_box(question_number: int, category: str) -> list:
         formatted_question_box = []
         category_line = f'║ {question_number + 1}) {category}' + ' ' * (41 - len(category))
-        for line in QUESTION_BOX:
+        for line in Formatter.QUESTION_BOX:
             if line:
                 formatted_question_box.append(line)
             else:
@@ -39,7 +39,7 @@ class Formatter:
         for question_idx, category_name in enumerate(categories):
             color = Color.YELLOW.value if question_idx % 2 else Color.BLUE.value
             question_cell = self._build_question_box(question_idx, category_name)
-            categories_table.append(apply_color(color, question_cell))
+            categories_table.append(Formatter.apply_color(color, question_cell))
         return categories_table
 
     def show_categories(self):
@@ -48,7 +48,7 @@ class Formatter:
 
         table_rows = len(self.categories_lst) // self.categories_in_line
         for row in range(table_rows):
-            for box_line_number in range(len(QUESTION_BOX)):
+            for box_line_number in range(len(Formatter.QUESTION_BOX)):
                 for col in range(self.categories_in_line):
                     question_number = (row * self.categories_in_line) + col
                     print(self.categories_lst[question_number][box_line_number], end='')
@@ -57,7 +57,7 @@ class Formatter:
 
     def mark_answered_question(self, answered_question: int):
         if answered_question < len(self.categories_lst):
-            self.categories_lst[answered_question] = apply_color(Color.UNAVAILABLE.value,
-                                                                 self.categories_lst[answered_question])
+            self.categories_lst[answered_question] = Formatter.apply_color(Color.UNAVAILABLE.value,
+                                                                           self.categories_lst[answered_question])
         else:
             raise RuntimeError("marked question doesn't exist.")
