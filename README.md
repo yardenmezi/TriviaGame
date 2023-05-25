@@ -1,6 +1,6 @@
 # Trivia Game
 
-A simple trivia game in the terminal where you can choose the question number by category and get the question and answer it.
+This is a simple trivia game that runs in the terminal. You can select a category and choose which question you want to answer by its number. 
 
 ## Table of Contents
 
