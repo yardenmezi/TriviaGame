@@ -32,7 +32,7 @@ That's it! You should now have everything you need to run this project on your m
 ## Usage
 
 To start the game, run the following command in your terminal:
-python main.py
+```python main.py```
 Follow the prompts to select the number of questions you want to answer and the category of the questions.
 
 ## Credits
