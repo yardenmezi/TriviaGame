@@ -15,6 +15,12 @@ class Formatter:
     def __init__(self, config: dict):
         self.categories_in_line = config["CATEGORIES_IN_LINE"]
 
+    def display_game_table(self, categories: list, available_categories: set):
+        if len(categories) == 0:
+            raise RuntimeError("No trivia categories to show")
+        categories_table = self._build_categories_table(categories, available_categories)
+        self._print_categories(categories_table)
+
     @staticmethod
     def _build_question_box(question_number: int, category: str) -> list:
         formatted_question_box = []
@@ -36,13 +42,7 @@ class Formatter:
             categories_table.append(Formatter.apply_color(color, question_cell))
         return categories_table
 
-    def display_game_table(self, categories: list, available_categories: set):
-        if len(categories) == 0:
-            raise RuntimeError("No trivia categories to show")
-        categories_table = self._build_categories_table(categories, available_categories)
-        self.show_categories(categories_table)
-
-    def show_categories(self, categories_table):
+    def _print_categories(self, categories_table):
         table_rows = len(categories_table) // self.categories_in_line
 
         for row in range(table_rows):
@@ -52,10 +52,3 @@ class Formatter:
                     print(categories_table[question_number][box_line_number], end='')
                 print('')
             print('')
-
-    def mark_answered_question(self, answered_question: int):
-        if answered_question < len(self.categories_lst):
-            self.categories_lst[answered_question] = Formatter.apply_color(Color.UNAVAILABLE.value,
-                                                                           self.categories_lst[answered_question])
-        else:
-            raise RuntimeError("marked question doesn't exist.")
