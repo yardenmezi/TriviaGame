@@ -1,3 +1,4 @@
+import html
 import random
 
 
@@ -9,13 +10,13 @@ class TriviaQuestion:
 
     def __init__(self, result):
         self._category = result['category']
-        self._question = result['question']
+        self._question = html.unescape(result['question'])
         self._answers = [''] * 4
         self._correct_answer_idx = random.randrange(4)
         self._set_answers(result['incorrect_answers'], result['correct_answer'])
 
     def get_answer_index(self):
-        return self._correct_answer_idx + 1
+        return self._correct_answer_idx
 
     def get_answer(self):
         return self._answers[self._correct_answer_idx]
@@ -27,9 +28,9 @@ class TriviaQuestion:
         self._answers[self._correct_answer_idx] = correct_answer
         for i, wrong_answer in enumerate(wrong_answers):
             if self._answers[i] == '':
-                self._answers[i] = wrong_answer
+                self._answers[i] = html.unescape(wrong_answer)
             else:
-                self._answers[i + 1] = wrong_answer
+                self._answers[i + 1] = html.unescape(wrong_answer)
 
     def __str__(self):
         question = f"Category: {self._category}\nQuestion: {self._question}\n"

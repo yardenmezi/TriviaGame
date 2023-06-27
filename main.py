@@ -1,19 +1,25 @@
 import logging
+
+import requests
 import yaml
 import messages
-from game import GameHandler
+from game import Game
 import formatter
 
 
 if __name__ == '__main__':
     try:
-        with open("config.yaml", "r") as f:
-            config = yaml.safe_load(f)
-        formatter = formatter.Formatter(config["FORMATTING"]["CATEGORIES_IN_LINE"])
-        game_handler = GameHandler(formatter, config["GAME"]["QUESTIONS_API"])
+        with open("config.yaml", "r") as config_file:
+            config = yaml.safe_load(config_file)
 
-        score = game_handler.run_trivia()
+        formatter = formatter.Formatter(config=config["FORMATTING"])
+        game = Game(formatter, game_config=config["GAME"])
+
+        score = game.start()
         print(f"your score is {score}")
-    except RuntimeError or OSError as e:
-        logging.error(f'An error occurred: {e}.')
+    except requests.exceptions.ConnectionError as exception:
+        logging.error(f'Failed to connect: {exception}.')
+        print(f"{messages.TRIVIA_UNAVAILABLE} {messages.CONNECTION_ERROR}")
+    except Exception as exception:
+        logging.error(f'An error occurred: {exception}.')
         print(messages.TRIVIA_UNAVAILABLE)
