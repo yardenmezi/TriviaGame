@@ -15,16 +15,12 @@ class OpenTDBParams:
     category: int
 
 
-def _handle_question_response(response):
-    return [TriviaQuestion(result) for result in response['results']]
-
-
-def extract_response_content(url, lambda_func, params=''):
+def _extract_response(url, extract_func, params=''):
     response = requests.get(url, params=params)
     if response.ok:
         response = response.json()
         if "response_code" not in response.keys() or response["response_code"] == 0:
-            return lambda_func(response)
+            return extract_func(response)
         raise requests.RequestException(
             f'Failed to get data from {URL}. response code: {response["response_code"]}')
     else:
@@ -34,11 +30,12 @@ def extract_response_content(url, lambda_func, params=''):
 
 def get_trivia_question(category_number):
     params = vars(OpenTDBParams(1, 'multiple', category_number))
-    return extract_response_content(URL, _handle_question_response, params)[0]
+    get_question = lambda response: [TriviaQuestion(result) for result in response['results']][0]
+    return _extract_response(URL, get_question, params)
 
 
 def get_trivia_categories(categories_number: int) -> list:
-    all_possible_categories = extract_response_content(CATEGORY_URL, lambda x: x["trivia_categories"])
+    all_possible_categories = _extract_response(CATEGORY_URL, lambda x: x["trivia_categories"])
     chosen_indices = random.sample(range(min(len(all_possible_categories), categories_number)), categories_number)
     categories = [all_possible_categories[i] for i in chosen_indices]
     return categories
