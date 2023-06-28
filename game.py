@@ -41,15 +41,14 @@ class Game:
         print(msg)
 
     def _manage_round_flow(self):
+        self._formatter.display_game_table(self._trivia_categories, self._available_category_indices)
         _question_idx = self.get_valid_user_input(self._available_category_indices, messages.CHOOSING_QUESTION)
         self._handle_question_asking_flow(_question_idx)
-        self.formatter.mark_answered_question(_question_idx)
 
     def _is_game_over(self) -> bool:
         return len(self._available_category_indices) == 0
 
-    def run_trivia(self) -> int:
+    def start(self) -> int:
         while not self._is_game_over():
-            self.formatter.show_categories()
             self._manage_round_flow()
         return self._score
