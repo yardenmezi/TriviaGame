@@ -1,12 +1,11 @@
 from typing import List
-import requests
 import messages
 import trivia_api
 from trivia_components import TriviaQuestion
 
 
 class Game:
-    def __init__(self, formatter,  game_config: dict):
+    def __init__(self, formatter, game_config: dict):
         self._score = 0
         self.formatter = formatter
         self._questions_api_config = game_config["QUESTIONS_NUMBER"]
@@ -20,7 +19,7 @@ class Game:
         else:
             return False
 
-    def get_valid_user_input(self, valid_answers_range: List[int], instruction_msg: str):
+    def get_valid_user_input(self, valid_answers_range: List[int] or set, instruction_msg: str):
         print(instruction_msg)
         _answer = input()
         while not self.is_valid_user_input(_answer, valid_answers_range):
@@ -41,22 +40,16 @@ class Game:
             msg = f"Wrong answer. Answer was: {question.get_answer()}"
         print(msg)
 
-    def handle_question_choosing(self):
-        _answer = self.get_valid_user_input([1, len(self.trivia_questions)], 'please choose question')
-        question_number: int = int(_answer) - 1
-        self.formatter.mark_answered_question(question_number)
-
-        if question_number in self.answered_questions:
-            print(messages.QUESTION_CHOSEN)
-        else:
-            self.answered_questions.add(question_number)
-            self._handle_question_asking_flow(question_number)
+    def _manage_round_flow(self):
+        _question_idx = self.get_valid_user_input(self._available_category_indices, messages.CHOOSING_QUESTION)
+        self._handle_question_asking_flow(_question_idx)
+        self.formatter.mark_answered_question(_question_idx)
 
     def _is_game_over(self) -> bool:
         return len(self._available_category_indices) == 0
 
     def run_trivia(self) -> int:
-        self.formatter.set_questions(self.trivia_questions)
-        while not self.is_game_over():
+        while not self._is_game_over():
             self.formatter.show_categories()
-            self.handle_question_choosing()
+            self._manage_round_flow()
+        return self._score
