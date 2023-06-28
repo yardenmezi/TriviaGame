@@ -1,6 +1,7 @@
 from typing import List
 import requests
 import messages
+import trivia_api
 from trivia_components import TriviaQuestion
 
 
@@ -9,17 +10,8 @@ class Game:
         self._score = 0
         self.formatter = formatter
         self._questions_api_config = game_config["QUESTIONS_NUMBER"]
-        self.trivia_questions = []
-        self.answered_questions = set()
-
-    @staticmethod
-    def get_trivia_questions(questions_api_config):
-        response = requests.get(questions_api_config["URL"], params=questions_api_config["PARAMS"])
-        if response.ok:
-            return [TriviaQuestion(result) for result in response.json()['results']]
-
-        raise RuntimeError(
-            f'Failed to get data from {questions_api_config["URL"]}. Status code: {response.status_code}. Reason: {response.reason}')
+        self._trivia_categories: list = trivia_api.get_trivia_categories(game_config["QUESTIONS_NUMBER"])
+        self._available_category_indices: set = {i for i in range(0, len(self._trivia_categories))}
 
     @staticmethod
     def is_valid_user_input(user_input: str, valid_range):
@@ -37,13 +29,17 @@ class Game:
             _answer = input()
         return _answer
 
-    def ask_trivia_question(self, chosen_question: TriviaQuestion):
-        _answer = self.get_valid_user_input([1, 4], chosen_question)
-        if int(_answer) == chosen_question.get_answer_index():
+    def _handle_question_asking_flow(self, question_idx):
+        question: TriviaQuestion = trivia_api.get_trivia_question(self._trivia_categories[question_idx]["id"])
+        self._available_category_indices.remove(question_idx)
+        user_response = self.get_valid_user_input([i for i in range(4)], question)
+
+        if int(user_response) == question.get_answer_index():
             self._score += 1
-            print("Correct!")
+            msg = "Correct!"
         else:
-            print(f"Wrong answer. Answer was: {chosen_question.get_answer()}")
+            msg = f"Wrong answer. Answer was: {question.get_answer()}"
+        print(msg)
 
     def handle_question_choosing(self):
         _answer = self.get_valid_user_input([1, len(self.trivia_questions)], 'please choose question')
@@ -54,10 +50,10 @@ class Game:
             print(messages.QUESTION_CHOSEN)
         else:
             self.answered_questions.add(question_number)
-            self.ask_trivia_question(self.trivia_questions[question_number])
+            self._handle_question_asking_flow(question_number)
 
-    def is_game_over(self) -> bool:
-        return len(self.answered_questions) == len(self.trivia_questions)
+    def _is_game_over(self) -> bool:
+        return len(self._available_category_indices) == 0
 
     def run_trivia(self) -> int:
         self.formatter.set_questions(self.trivia_questions)
