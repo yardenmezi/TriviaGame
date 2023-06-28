@@ -1,4 +1,5 @@
 import logging
+import requests
 import yaml
 import messages
 from game import Game
@@ -15,6 +16,10 @@ if __name__ == '__main__':
 
         score = game.start()
         print(f"your score is {score}")
-    except RuntimeError or OSError as e:
-        logging.error(f'An error occurred: {e}.')
+
+    except requests.exceptions.ConnectionError as exception:
+        logging.error(f'Failed to connect: {exception}.')
+        print(f"{messages.TRIVIA_UNAVAILABLE} {messages.CONNECTION_ERROR}")
+    except RuntimeError or OSError  as exception:
+        logging.error(f'An error occurred: {exception}.')
         print(messages.TRIVIA_UNAVAILABLE)
