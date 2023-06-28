@@ -13,7 +13,7 @@ if __name__ == '__main__':
         formatter = formatter.Formatter(config=config["FORMATTING"])
         game = Game(formatter, game_config=config["GAME"])
 
-        score = game.run_trivia()
+        score = game.start()
         print(f"your score is {score}")
     except RuntimeError or OSError as e:
         logging.error(f'An error occurred: {e}.')
