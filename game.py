@@ -4,21 +4,13 @@ import messages
 from trivia_components import TriviaQuestion
 
 
-class GameHandler:
-    def __init__(self, formatter, questions_api_config):
+class Game:
+    def __init__(self, formatter,  game_config: dict):
         self._score = 0
         self.formatter = formatter
-        self._questions_api_config = questions_api_config
-        self.trivia_questions = None
+        self._questions_api_config = game_config["QUESTIONS_NUMBER"]
+        self.trivia_questions = []
         self.answered_questions = set()
-
-        self.init_new_game()
-
-    def init_new_game(self):
-        self._score = 0
-        self.answered_questions = set()
-        self.trivia_questions = self.get_trivia_questions(self._questions_api_config)
-        self.formatter.set_questions(self.trivia_questions)
 
     @staticmethod
     def get_trivia_questions(questions_api_config):
