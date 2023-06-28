@@ -1,4 +1,4 @@
-# Trivia Game
+# Trivia Game (Work in progress)
 
 This is a simple trivia game that runs in the terminal. You can select a category and choose which question you want to answer by its number. 
 
