@@ -1,12 +1,4 @@
 GAME:
   QUESTIONS_NUMBER: 9
-  QUESTIONS_API:
-    URL: 'https://opentdb.com/api.php'
-    PARAMS: {
-      'amount': 9,
-      'type': 'multiple'
-    }
-
 FORMATTING:
   CATEGORIES_IN_LINE: 3
-
