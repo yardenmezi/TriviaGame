@@ -28,7 +28,7 @@ def _extract_response(url, extract_func, params=''):
             f'Failed to get data from {URL}. Status code: {response.status_code}. Reason: {response.reason}')
 
 
-def get_trivia_question(category_number):
+def get_trivia_question(category_number) -> TriviaQuestion:
     params = vars(OpenTDBParams(1, 'multiple', category_number))
     get_question = lambda response: [TriviaQuestion(result) for result in response['results']][0]
     return _extract_response(URL, get_question, params)
