@@ -41,4 +41,3 @@ def get_trivia_categories(categories_number: int) -> list:
     chosen_indices = random.sample(range(min(len(all_possible_categories), categories_number)), categories_number)
     categories = [all_possible_categories[i] for i in chosen_indices]
     return categories
-
