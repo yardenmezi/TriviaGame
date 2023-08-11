@@ -15,10 +15,8 @@ class Formatter:
     def __init__(self, config: dict):
         self.categories_in_line = config["CATEGORIES_IN_LINE"]
 
-    def display_game_table(self, categories: list, available_categories: set):
-        if len(categories) == 0:
-            raise RuntimeError("No trivia categories to show")
-        categories_table = self._build_categories_table(categories, available_categories)
+    def display_game_table(self, categories: list):
+        categories_table = self._build_categories_table(categories)
         self._print_categories(categories_table)
 
     @staticmethod
@@ -32,13 +30,13 @@ class Formatter:
                 formatted_question_box.append(category_line)
         return formatted_question_box
 
-    def _build_categories_table(self, categories: list, available_categories: set) -> list:
+    def _build_categories_table(self, categories: list) -> list:
         categories_table = []
 
         for question_idx, category in enumerate(categories):
             color = Color.YELLOW.value if question_idx % 2 else Color.BLUE.value
             question_cell = self._build_question_box(question_idx, category["name"])
-            if question_idx not in available_categories:
+            if "is_available" in category and not category["is_available"]:
                 question_cell = Formatter.apply_color(Color.UNAVAILABLE.value, question_cell)
             categories_table.append(Formatter.apply_color(color, question_cell))
         return categories_table

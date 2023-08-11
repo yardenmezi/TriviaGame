@@ -18,8 +18,8 @@ class Game:
     def __init__(self, formatter, game_config: dict):
         self._score = 0
         self._formatter = formatter
+        # todo: handle empty list - should raise an error
         self._trivia_categories: list = trivia_api.get_trivia_categories(game_config["QUESTIONS_NUMBER"])
-        self._available_category_indices: set = {i for i in range(0, len(self._trivia_categories))}
 
     offset_user_input = lambda x: x - 1
 
@@ -28,12 +28,20 @@ class Game:
             self._manage_round_flow()
         return self._score
 
+    def _get_available_indexes(self):
+        available_indexes = []
+        for idx, category in enumerate(self._trivia_categories):
+            if "is_available" not in category or category["is_available"]:
+                available_indexes.append(idx)
+        return available_indexes
+
     def _is_game_over(self) -> bool:
-        return len(self._available_category_indices) == 0
+        return len(self._get_available_indexes()) == 0
 
     def _handle_question_asking_flow(self, question_idx):
         question: TriviaQuestion = trivia_api.get_trivia_question(self._trivia_categories[question_idx]["id"])
-        self._available_category_indices.remove(question_idx)
+        self._trivia_categories[question_idx]["is_available"] = False
+
         user_response = get_valid_user_input([i for i in range(NUMBER_OF_ANSWERS)], question)
 
         if int(user_response) == question.get_answer_index():
@@ -44,6 +52,8 @@ class Game:
         print(msg)
 
     def _manage_round_flow(self):
-        self._formatter.display_game_table(self._trivia_categories, self._available_category_indices)
-        _question_idx = get_valid_user_input(self._available_category_indices, messages.CHOOSING_QUESTION)
+        self._formatter.display_game_table(self._trivia_categories)
+        available_indexes = self._get_available_indexes()
+        print(available_indexes)
+        _question_idx = get_valid_user_input(available_indexes, messages.CHOOSING_QUESTION)
         self._handle_question_asking_flow(_question_idx)
