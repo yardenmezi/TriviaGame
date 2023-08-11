@@ -1,10 +1,9 @@
-from typing import List
 import messages
 import trivia_api
 from trivia_components import TriviaQuestion, NUMBER_OF_ANSWERS
 
 
-def get_valid_user_input(valid_answers_range: List[int] or set, instruction_msg: str):
+def get_valid_user_input(valid_answers_range, instruction_msg):
     print(instruction_msg)
     user_input = input()
     while not user_input.isnumeric() or not Game.offset_user_input(int(user_input)) in valid_answers_range:
@@ -15,7 +14,7 @@ def get_valid_user_input(valid_answers_range: List[int] or set, instruction_msg:
 
 
 class Game:
-    def __init__(self, formatter, game_config: dict):
+    def __init__(self, formatter, game_config):
         self._score = 0
         self._formatter = formatter
         # todo: handle empty list - should raise an error

@@ -30,7 +30,7 @@ class Formatter:
                 formatted_question_box.append(category_line)
         return formatted_question_box
 
-    def _build_categories_table(self, categories: list) -> list:
+    def _build_categories_table(self, categories):
         categories_table = []
 
         for question_idx, category in enumerate(categories):
