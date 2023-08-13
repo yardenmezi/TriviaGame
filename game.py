@@ -19,7 +19,6 @@ class Game:
     def __init__(self, formatter, game_config):
         self._score = 0
         self._formatter = formatter
-        # todo: handle empty list - should raise an error
         self._trivia_categories: list = trivia_api.get_trivia_categories(game_config["QUESTIONS_NUMBER"])
         if len(self._trivia_categories) == 0:
             raise ValueError('_trivia_categories should have at least one value')
