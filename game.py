@@ -14,13 +14,15 @@ def get_valid_user_input(valid_answers_range, instruction_msg):
 
 
 class Game:
+    offset_user_input = lambda x: x - 1
+
     def __init__(self, formatter, game_config):
         self._score = 0
         self._formatter = formatter
         # todo: handle empty list - should raise an error
         self._trivia_categories: list = trivia_api.get_trivia_categories(game_config["QUESTIONS_NUMBER"])
-
-    offset_user_input = lambda x: x - 1
+        if len(self._trivia_categories) == 0:
+            raise ValueError('_trivia_categories should have at least one value')
 
     def start(self) -> int:
         while not self._is_game_over():
@@ -53,6 +55,5 @@ class Game:
     def _manage_round_flow(self):
         self._formatter.display_game_table(self._trivia_categories)
         available_indexes = self._get_available_indexes()
-        print(available_indexes)
         _question_idx = get_valid_user_input(available_indexes, messages.CHOOSE_CATEGORY_INSTRUCTION)
         self._handle_question_asking_flow(_question_idx)
