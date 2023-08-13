@@ -10,10 +10,10 @@ class TriviaQuestion:
     _answers: list
     _correct_answer_idx: int
 
-    def __init__(self, result):
-        self._category = result['category']
-        self._question = html.unescape(result['question'])
-        self._set_answers(result['incorrect_answers'], result['correct_answer'])
+    def __init__(self, question_data):
+        self._category = question_data['category']
+        self._question = html.unescape(question_data['question'])
+        self._set_answers(question_data['incorrect_answers'], question_data['correct_answer'])
 
     def get_answer_index(self):
         return self._correct_answer_idx
