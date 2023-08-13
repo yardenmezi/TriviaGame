@@ -54,5 +54,5 @@ class Game:
         self._formatter.display_game_table(self._trivia_categories)
         available_indexes = self._get_available_indexes()
         print(available_indexes)
-        _question_idx = get_valid_user_input(available_indexes, messages.CHOOSING_QUESTION)
+        _question_idx = get_valid_user_input(available_indexes, messages.CHOOSE_CATEGORY_INSTRUCTION)
         self._handle_question_asking_flow(_question_idx)
