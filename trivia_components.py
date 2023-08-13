@@ -25,9 +25,9 @@ class TriviaQuestion:
         return self._category
 
     def _set_answers(self, wrong_answers, correct_answer):
-        self._answers = wrong_answers
+        self._answers = html.unescape(wrong_answers)
         self._correct_answer_idx = random.randrange(NUMBER_OF_ANSWERS)
-        self._answers.insert(self._correct_answer_idx, correct_answer)
+        self._answers.insert(self._correct_answer_idx, html.unescape(correct_answer))
 
     def __str__(self):
         question = f"Category: {self._category}\nQuestion: {self._question}\n"
