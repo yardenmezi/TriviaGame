@@ -34,11 +34,13 @@ class Formatter:
         categories_table = []
 
         for question_idx, category in enumerate(categories):
-            color = Color.YELLOW.value if question_idx % 2 else Color.BLUE.value
             question_cell = self._build_question_box(question_idx, category["name"])
+            color = Color.YELLOW.value if question_idx % 2 else Color.BLUE.value
+            colored_category = Formatter.apply_color(color, question_cell)
             if "is_available" in category and not category["is_available"]:
-                question_cell = Formatter.apply_color(Color.UNAVAILABLE.value, question_cell)
-            categories_table.append(Formatter.apply_color(color, question_cell))
+                categories_table.append(Formatter.apply_color(Color.UNAVAILABLE.value, colored_category))
+            else:
+                categories_table.append(colored_category)
         return categories_table
 
     def _print_categories(self, categories_table):
