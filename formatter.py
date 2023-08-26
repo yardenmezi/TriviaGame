@@ -1,15 +1,21 @@
 from enum import Enum
 
 
-class Color(Enum):
-    YELLOW = '\033[1;34m'
-    BLUE = '\033[1;33m'
-    UNAVAILABLE = '\033[47m'
+class OutputStyle(Enum):
     RESET = '\033[0m'
 
 
+class ForegroundColor(Enum):
+    YELLOW = '\033[1;34m'
+    BLUE = '\033[1;33m'
+
+
+class BackgroundColor(Enum):
+    UNAVAILABLE = '\033[47m'
+
+
 class Formatter:
-    apply_color = lambda color, question_box: [color + string + Color.RESET.value for string in question_box]
+    apply_style = lambda style, question_box: [style + string + OutputStyle.RESET.value for string in question_box]
     QUESTION_BOX = ['╔' + '═' * 45, '║' + ' ' * 45, None, '╚' + '═' * 45]
 
     def __init__(self, config: dict):
@@ -34,11 +40,11 @@ class Formatter:
         categories_table = []
 
         for question_idx, category in enumerate(categories):
-            question_cell = self._build_question_box(question_idx, category["name"])
-            color = Color.YELLOW.value if question_idx % 2 else Color.BLUE.value
-            colored_category = Formatter.apply_color(color, question_cell)
-            if "is_available" in category and not category["is_available"]:
-                categories_table.append(Formatter.apply_color(Color.UNAVAILABLE.value, colored_category))
+            question_cell = self._build_question_box(question_idx, category.name)
+            foreground_color = ForegroundColor.YELLOW.value if question_idx % 2 else ForegroundColor.BLUE.value
+            colored_category = Formatter.apply_style(foreground_color, question_cell)
+            if not category.is_available():
+                categories_table.append(Formatter.apply_style(BackgroundColor.UNAVAILABLE.value, colored_category))
             else:
                 categories_table.append(colored_category)
         return categories_table

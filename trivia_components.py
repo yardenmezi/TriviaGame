@@ -4,6 +4,26 @@ import random
 NUMBER_OF_ANSWERS = 4
 
 
+class Category:
+    _is_available: bool
+    id: int
+    name: str
+
+    def __init__(self, category_props):
+        self._is_available = category_props["is_available"] if "is_available" in category_props else True
+        try:
+            self.name = category_props["name"]
+            self.id = category_props["id"]
+        except KeyError:
+            raise ValueError('Required category props are missing')
+
+    def change_availability(self, is_available):
+        self._is_available = is_available
+
+    def is_available(self):
+        return self._is_available
+
+
 class TriviaQuestion:
     _category: str
     _question: str

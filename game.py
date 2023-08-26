@@ -19,7 +19,7 @@ class Game:
     def __init__(self, formatter, game_config):
         self._score = 0
         self._formatter = formatter
-        self._trivia_categories: list = trivia_api.get_trivia_categories(game_config["QUESTIONS_NUMBER"])
+        self._trivia_categories = trivia_api.get_trivia_categories(game_config["QUESTIONS_NUMBER"])
         if len(self._trivia_categories) == 0:
             raise ValueError('_trivia_categories should have at least one value')
 
@@ -31,16 +31,16 @@ class Game:
     def _get_available_indexes(self):
         available_indexes = []
         for idx, category in enumerate(self._trivia_categories):
-            if "is_available" not in category or category["is_available"]:
+            if category.is_available():
                 available_indexes.append(idx)
         return available_indexes
 
-    def _is_game_over(self) -> bool:
+    def _is_game_over(self):
         return len(self._get_available_indexes()) == 0
 
     def _handle_question_asking_flow(self, question_idx):
-        question: TriviaQuestion = trivia_api.get_trivia_question(self._trivia_categories[question_idx]["id"])
-        self._trivia_categories[question_idx]["is_available"] = False
+        question: TriviaQuestion = trivia_api.get_trivia_question(self._trivia_categories[question_idx].id)
+        self._trivia_categories[question_idx].change_availability(False)
 
         user_response = get_valid_user_input([i for i in range(NUMBER_OF_ANSWERS)], question)
 

@@ -1,11 +1,11 @@
 import requests
 import random
 from dataclasses import dataclass
-from trivia_components import TriviaQuestion
+from trivia_components import TriviaQuestion, Category
 
-BASE_OPENTB_URL = 'https://opentdb.com'
-API_REQUESTS_URL = f'{BASE_OPENTB_URL}/api.php'
-CATEGORY_URL = f'{BASE_OPENTB_URL}/api_category.php'
+BASE_OPENTDB_URL = 'https://opentdb.com'
+API_REQUESTS_URL = f'{BASE_OPENTDB_URL}/api.php'
+CATEGORIES_URL = f'{BASE_OPENTDB_URL}/api_category.php'
 
 
 @dataclass
@@ -20,7 +20,7 @@ def _extract_response(url, params=''):
     if response.ok:
         response = response.json()
         # response_code is a parameter received by some of the requests. It is used to check the the response
-        # For more information, see opentb documentation: https://opentdb.com/api_config.php
+        # For more information, see opentdb documentation: https://opentdb.com/api_config.php
         if "response_code" not in response.keys() or response["response_code"] == 0:
             return response
         raise requests.RequestException(
@@ -37,7 +37,7 @@ def get_trivia_question(category_number):
 
 
 def get_trivia_categories(categories_number):
-    all_possible_categories = _extract_response(CATEGORY_URL)["trivia_categories"]
+    all_possible_categories = _extract_response(CATEGORIES_URL)["trivia_categories"]
     chosen_indices = random.sample(range(min(len(all_possible_categories), categories_number)), categories_number)
-    categories = [all_possible_categories[i] for i in chosen_indices]
+    categories = [Category(all_possible_categories[i]) for i in chosen_indices]
     return categories
