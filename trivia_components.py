@@ -1,4 +1,27 @@
+import html
 import random
+
+NUMBER_OF_ANSWERS = 4
+
+
+class Category:
+    _is_available: bool
+    id: int
+    name: str
+
+    def __init__(self, category_props):
+        self._is_available = category_props["is_available"] if "is_available" in category_props else True
+        try:
+            self.name = category_props["name"]
+            self.id = category_props["id"]
+        except KeyError:
+            raise ValueError('Required category props are missing')
+
+    def change_availability(self, is_available):
+        self._is_available = is_available
+
+    def is_available(self):
+        return self._is_available
 
 
 class TriviaQuestion:
@@ -7,15 +30,13 @@ class TriviaQuestion:
     _answers: list
     _correct_answer_idx: int
 
-    def __init__(self, result):
-        self._category = result['category']
-        self._question = result['question']
-        self._answers = [''] * 4
-        self._correct_answer_idx = random.randrange(4)
-        self._set_answers(result['incorrect_answers'], result['correct_answer'])
+    def __init__(self, question_data):
+        self._category = question_data['category']
+        self._question = html.unescape(question_data['question'])
+        self._set_answers(question_data['incorrect_answers'], question_data['correct_answer'])
 
     def get_answer_index(self):
-        return self._correct_answer_idx + 1
+        return self._correct_answer_idx
 
     def get_answer(self):
         return self._answers[self._correct_answer_idx]
@@ -24,12 +45,9 @@ class TriviaQuestion:
         return self._category
 
     def _set_answers(self, wrong_answers, correct_answer):
-        self._answers[self._correct_answer_idx] = correct_answer
-        for i, wrong_answer in enumerate(wrong_answers):
-            if self._answers[i] == '':
-                self._answers[i] = wrong_answer
-            else:
-                self._answers[i + 1] = wrong_answer
+        self._answers = html.unescape(wrong_answers)
+        self._correct_answer_idx = random.randrange(NUMBER_OF_ANSWERS)
+        self._answers.insert(self._correct_answer_idx, html.unescape(correct_answer))
 
     def __str__(self):
         question = f"Category: {self._category}\nQuestion: {self._question}\n"
